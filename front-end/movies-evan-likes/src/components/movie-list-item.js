@@ -4,9 +4,11 @@ const MovieListItem = (props) => {
   const url = props.movie.url
   const movieTitle = props.movie.title
   const movieYear = props.movie.year
+  const movieScore = props.movie.score * 100
 
   return (
     <li>
+      { movieScore + '% '}
       <a href={url}>
         {movieTitle}
       </a>
