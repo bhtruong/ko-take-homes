@@ -1,9 +1,13 @@
 import React from 'react'
 
 const MovieListItem = (props) => {
+  const url = props.movie.url
+  const movieTitle = props.movie.title
   return (
     <li>
-      {props.movie.title}
+      <a href={url}>
+        {movieTitle}
+      </a>
     </li>
   )
 }
