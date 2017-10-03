@@ -58,8 +58,8 @@ class App extends Component {
             Below is a (not) comprehensive list of movies that Evan really
             likes.
           </p>
-          <MovieList movies={this.state.movies}/>
         </div>
+        <MovieList movies={this.state.movies}/>
       </div>
     )
   }
