@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
+
 import MovieList from './components/movie-list'
+import SearchBar from './components/search-bar'
 
 /*
  * converted App to a class based component to take advantage
@@ -7,7 +9,9 @@ import MovieList from './components/movie-list'
  */
 class App extends Component {
   constructor(prop) {
-    super(prop);
+    super(prop)
+
+    this.searchByTitle = this.searchByTitle.bind(this)
 
     let storedMovies, storedReviews
 
@@ -19,7 +23,7 @@ class App extends Component {
     storedMovies = JSON.parse(storedMovies) || []
     storedReviews = JSON.parse(storedReviews) || []
 
-    this.state = { movies: storedMovies }
+    this.state = { movies: storedMovies, filteredMovies: storedMovies }
 
     if (!storedMovies.length) {
       getJSON('/movies', (movies) => { 
@@ -49,6 +53,18 @@ class App extends Component {
     }
   }
 
+  searchByTitle(term) {
+    if (term.length > 1) {
+      let filteredMovies = this.state.movies.filter((movie) => {
+        return movie.title.toLowerCase().includes(term)
+      })
+
+      this.setState({ filteredMovies: filteredMovies })
+    } else {
+      this.setState({ filteredMovies: this.state.movies })
+    }
+  }
+
   render() {
     return (
       <div className='page'>
@@ -59,7 +75,8 @@ class App extends Component {
             likes.
           </p>
         </div>
-        <MovieList movies={this.state.movies}/>
+        <SearchBar onSearch={this.searchByTitle}/>
+        <MovieList movies={this.state.filteredMovies}/>
       </div>
     )
   }
