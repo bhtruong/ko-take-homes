@@ -27,8 +27,13 @@ class App extends Component {
     storedReviews = JSON.parse(storedReviews) || []
     storedDecades = JSON.parse(storedDecades) || []
 
+    // console.log(storedMovies)
+    // console.log(storedReviews)
+    // console.log(storedDecades)
+
     this.state = { 
-      movies: storedMovies, 
+      movies: storedMovies,
+      reviews: storedReviews, 
       filteredMovies: storedMovies,
       decades: storedDecades
     }
@@ -76,8 +81,11 @@ class App extends Component {
 
     if (!storedReviews.length) {
       getJSON('reviews', (reviews) => {
+        // console.log(JSON.parse(reviews))
+        this.setState({ reviews: JSON.parse(reviews) })
+
         if (storageAvailable('localStorage')) {
-          window['localStorage'].setItem('reviews', JSON.stringify(reviews))
+          window['localStorage'].setItem('reviews', reviews)
         }
       })
     }
@@ -145,7 +153,9 @@ class App extends Component {
         <Dropdown
           decades={this.state.decades}
           onDecadeSelect={this.selectDecade}/>
-        <MovieList movies={this.state.filteredMovies}/>
+        <MovieList
+          movies={this.state.filteredMovies}
+          reviews={this.state.reviews}/>
       </div>
     )
   }

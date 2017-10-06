@@ -4,6 +4,19 @@ html, body
   font-size: 100%;
 }
 
+.review-active {
+  padding: 5px;
+  background-color: #D8D8D8;
+}
+
+p.hidden {
+  display: none;
+}
+
+p.active {
+  display: block;
+}
+
 .page {
   padding: 1rem;
   min-height: calc(100vh - 2rem);
