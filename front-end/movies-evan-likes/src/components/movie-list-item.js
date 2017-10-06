@@ -1,18 +1,19 @@
 import React from 'react'
 
 const MovieListItem = (props) => {
-  const url = props.movie.url
-  const movieTitle = props.movie.title
-  const movieId = props.movie.id
-  const movieYear = props.movie.year
-  const movieScore = props.movie.score * 100
-  const coverURL = props.movie['cover-url']
+  const movie = props.movie
+  const url = movie.url
+  const movieTitle = movie.title
+  const movieId = movie.id
+  const movieYear = movie.year
+  const movieScore = movie.score * 100
+  const coverURL = movie['cover-url']
   const reviews = props.reviews
   let review
 
   if (reviews.length) {
     //movie-id is equal to the array index + 1
-    review = props.reviews[movieId - 1].review
+    review = reviews[movieId - 1].review
   }
 
   return (

@@ -27,10 +27,6 @@ class App extends Component {
     storedReviews = JSON.parse(storedReviews) || []
     storedDecades = JSON.parse(storedDecades) || []
 
-    // console.log(storedMovies)
-    // console.log(storedReviews)
-    // console.log(storedDecades)
-
     this.state = { 
       movies: storedMovies,
       reviews: storedReviews, 
@@ -49,9 +45,9 @@ class App extends Component {
           return 0
         })
 
-        //find the decade each movie was made
-        //remove the duplicates from the array
-        //sort the array
+        //1) find the decade each movie was made
+        //2) remove the duplicates from the array
+        //3) sort the array
         let decades = movies.map((movie) => {
           //convert number to char array
           let year = Array.from(movie.year.toString())
@@ -81,7 +77,6 @@ class App extends Component {
 
     if (!storedReviews.length) {
       getJSON('reviews', (reviews) => {
-        // console.log(JSON.parse(reviews))
         this.setState({ reviews: JSON.parse(reviews) })
 
         if (storageAvailable('localStorage')) {
