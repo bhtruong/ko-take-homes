@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 
 import MovieList from './components/movie-list'
 import SearchBar from './components/search-bar'
+import Dropdown from './components/dropdown'
 
 /*
  * converted App to a class based component to take advantage
@@ -12,34 +13,63 @@ class App extends Component {
     super(prop)
 
     this.searchByTitle = this.searchByTitle.bind(this)
+    this.selectDecade = this.selectDecade.bind(this)
 
-    let storedMovies, storedReviews
+    let storedMovies, storedReviews, storedDecades;
 
     if (storageAvailable('localStorage')) {
       storedMovies = window['localStorage'].getItem('movies')
       storedReviews = window['localStorage'].getItem('reviews')
+      storedDecades = window['localStorage'].getItem('decades')
     }
 
     storedMovies = JSON.parse(storedMovies) || []
     storedReviews = JSON.parse(storedReviews) || []
+    storedDecades = JSON.parse(storedDecades) || []
 
-    this.state = { movies: storedMovies, filteredMovies: storedMovies }
+    this.state = { 
+      movies: storedMovies, 
+      filteredMovies: storedMovies,
+      decades: storedDecades
+    }
 
     if (!storedMovies.length) {
-      getJSON('/movies', (movies) => { 
-        //parse JSON string to object and sort by title
-        let movieList = JSON.parse(movies).sort((a, b) => {
+      getJSON('/movies', (movies) => {
+        movies = JSON.parse(movies)
+
+        //sort movies by title
+        let movieList = movies.sort((a, b) => {
           if (a.title < b.title) { return -1 }
           if (a.title > b.title) { return 1 }
           return 0
         })
 
+        //find the decade each movie was made
+        //remove the duplicates from the array
+        //sort the array
+        let decades = movies.map((movie) => {
+          //convert number to char array
+          let year = Array.from(movie.year.toString())
+
+          //"round down" to get the decade
+          //for example: 1968 -> 1960
+          year[year.length - 1] = '0'
+          year = parseInt(year.join(''))
+
+          return year
+        }).filter((decade, index, arr) => {
+          return index === arr.indexOf(decade)
+        }).sort()
+
         this.setState({
-          movies: movieList
+          movies: movieList,
+          filteredMovies: movieList,
+          decades: decades
         })
 
         if (storageAvailable('localStorage')) {
           window['localStorage'].setItem('movies', JSON.stringify(movieList))
+          window['localStorage'].setItem('decades', JSON.stringify(decades))
         }
       })
     }
@@ -54,15 +84,51 @@ class App extends Component {
   }
 
   searchByTitle(term) {
+    //filter when the search term is at least two characters
     if (term.length > 1) {
+      //get the selected decade to filter movies by decade as well
+      let decade = this.state.selectedDecade
       let filteredMovies = this.state.movies.filter((movie) => {
-        return movie.title.toLowerCase().includes(term)
+        let containsTerm = movie.title.toLowerCase().includes(term)
+        
+        if (decade) {
+          containsTerm = containsTerm  && (movie.year < decade + 10 && movie.year > decade)
+        }
+
+        return containsTerm
       })
 
       this.setState({ filteredMovies: filteredMovies })
     } else {
-      this.setState({ filteredMovies: this.state.movies })
+      if (this.state.selectedDecade) {
+        this.setState({ filteredMovies: this.state.moviesByDecade })
+      } else {
+        this.setState({ filteredMovies: this.state.movies })
+      }
     }
+  }
+
+  selectDecade(decade) {
+    if (!decade) {
+      this.setState({ 
+        selectedDecade: '',
+        filteredMovies: this.state.movies
+      })
+
+      return
+    }
+
+    let moviesByDecade = this.state.movies.filter((movie) => {
+      let selectedDecade = parseInt(decade)
+
+      return movie.year < selectedDecade + 10 && movie.year > selectedDecade
+    })
+
+    this.setState({ 
+      selectedDecade: parseInt(decade),
+      moviesByDecade: moviesByDecade,
+      filteredMovies: moviesByDecade
+    })
   }
 
   render() {
@@ -76,6 +142,9 @@ class App extends Component {
           </p>
         </div>
         <SearchBar onSearch={this.searchByTitle}/>
+        <Dropdown
+          decades={this.state.decades}
+          onDecadeSelect={this.selectDecade}/>
         <MovieList movies={this.state.filteredMovies}/>
       </div>
     )
