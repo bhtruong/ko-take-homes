@@ -6,6 +6,7 @@ const MovieListItem = (props) => {
   const movieId = props.movie.id
   const movieYear = props.movie.year
   const movieScore = props.movie.score * 100
+  const coverURL = props.movie['cover-url']
   const reviews = props.reviews
   let review
 
@@ -22,8 +23,9 @@ const MovieListItem = (props) => {
       <a href={url} onClick={(event) => {event.stopPropagation()}}>
         {movieTitle}
       </a>
-      { ' (' + movieYear + ')' }
+      { ' (' + movieYear + ')' }        
       <p className="hidden">
+        <img src={coverURL}/>
         {review}
       </p>
     </li>
